@@ -113,7 +113,7 @@ func (device *Device) NewPeer(pk NoisePublicKey) (*Peer, error) {
 	return peer, nil
 }
 
-func (peer *Peer) SendBuffers(buffers [][]byte, services []uint64) error {
+func (peer *Peer) SendBuffers(buffers [][]byte, services []conn.Service) error {
 	peer.device.net.RLock()
 	defer peer.device.net.RUnlock()
 

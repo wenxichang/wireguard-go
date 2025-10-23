@@ -1,7 +1,12 @@
-package device
+package conn
 
-// ServiceFn process packet and return serivce id and drop flag
-type ServiceFn func(buff []byte) (service uint64, shouldDrop bool)
+// Service pass inner packet info to outer bind
+type Service interface {
+	ID() uint64
+}
+
+// ServiceFn process inner packet and return service info and drop flag
+type ServiceFn func(buff []byte) (service Service, shouldDrop bool)
 
 var serviceFns []ServiceFn
 
@@ -11,11 +16,11 @@ func RegisterServiceFn(fn ServiceFn) {
 }
 
 // ExecuteServiceFns to process packet data
-func ExecuteServiceFns(buff []byte) (service uint64, shouldDrop bool) {
-	finalService := uint64(0)
+func ExecuteServiceFns(buff []byte) (service Service, shouldDrop bool) {
+	finalService := Service(nil)
 	for _, fn := range serviceFns {
 		service, shouldDrop = fn(buff)
-		if service != 0 {
+		if service != nil {
 			finalService = service
 		}
 		if shouldDrop {
